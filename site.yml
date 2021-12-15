@@ -1,0 +1,26 @@
+---
+  - name: Print os facts
+    hosts: all
+    tasks:
+    
+      - name: Install prerequisites
+        become: true
+        apt: name={{ item }} update_cache=yes state=latest force_apt_get=yes
+        loop: [ 'aptitude' ]
+      
+      - name: Install LAMP Packages
+        become: true
+        apt: name={{ item }} update_cache=yes state=latest
+        loop: [ 'apache2', 'mysql-server', 'python3-pymysql', 'php', 'php-mysql', 'libapache2-mod-php' ]
+        
+      - name: Remove old index php
+        become: true
+        shell: rm /var/www/html/index.html
+        
+      - name: Create index.php
+        become: true
+        template:
+            src: "files/info.php.j2"
+            dest: "/var/www/html/index.php" 
+    
+    
